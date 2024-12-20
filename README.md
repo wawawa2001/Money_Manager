@@ -13,7 +13,7 @@
    **確認方法**: `cat /etc/postfix/sasl_passwd` を使用
 9. `python3 -m venv venv` で仮想環境を作成
 10. `source venv/bin/activate` で仮想環境に入る
-11. `pip install -r requirements.txt` で必要なライブラリをインストール
+11. initフォルダに移動し、`pip install -r requirements.txt` で必要なライブラリをインストール
 12. `MONEY_MANAGER` のフォルダに入る
 13. `python3 main.py` で実行  
     **注意**: ポート80を使用しているため、別アプリが動いている場合は停止してください。
