@@ -101,16 +101,16 @@ MONEY_MANAGERは、PythonとMySQLを使用した資産管理システムです�
 <img width="569" alt="ログイン画面" src="https://github.com/user-attachments/assets/ba5e53d8-c381-4762-8e49-718fde87bd3c" />
 
 #### ユーザ登録エラー画面  
-<img width="569" alt="ユーザ登録エラー画面" src="https://github.com/user-attachments/assets/09a2af1a-d651-4139-8b9f-5b3ff43629be" />
+<img width="300" alt="ユーザ登録エラー画面" src="https://github.com/user-attachments/assets/09a2af1a-d651-4139-8b9f-5b3ff43629be" />
 
 #### 仮登録メール  
-<img width="569" alt="仮登録メール" src="https://github.com/user-attachments/assets/a0386e67-e2b4-44b3-a246-64e27fa3f438" />
+<img width="300" alt="仮登録メール" src="https://github.com/user-attachments/assets/a0386e67-e2b4-44b3-a246-64e27fa3f438" />
 
 #### 登録完了  
-<img width="569" alt="登録完了" src="https://github.com/user-attachments/assets/dbefb07e-5d8f-49ee-918d-6aab4b9c00f1" />
+<img width="300" alt="登録完了" src="https://github.com/user-attachments/assets/dbefb07e-5d8f-49ee-918d-6aab4b9c00f1" />
 
 #### 登録不可  
-<img width="569" alt="登録不可" src="https://github.com/user-attachments/assets/93c0571f-f2c2-4829-babd-c7b80d5ee2b1" />
+<img width="300" alt="登録不可" src="https://github.com/user-attachments/assets/93c0571f-f2c2-4829-babd-c7b80d5ee2b1" />
 
 #### 簡易表示  
 <img width="569" alt="簡易表示" src="https://github.com/user-attachments/assets/f6244e16-24ea-4477-9c16-dfacf7dbdf63" />
@@ -120,7 +120,9 @@ MONEY_MANAGERは、PythonとMySQLを使用した資産管理システムです�
 
 #### 資産管理画面  
 <img width="569" alt="資産管理画面1" src="https://github.com/user-attachments/assets/e787e780-0501-4819-92d0-86c9ce26ecda" />  
-<img width="569" alt="資産管理画面2" src="https://github.com/user-attachments/assets/c77b47c2-8f66-4404-9a4c-0e52f6f7a6a1" />
+
+#### データがないときのメッセージ  
+<img width="300" alt="資産管理画面2" src="https://github.com/user-attachments/assets/c77b47c2-8f66-4404-9a4c-0e52f6f7a6a1" />
 
 
 
