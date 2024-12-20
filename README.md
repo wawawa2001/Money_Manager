@@ -1,6 +1,6 @@
 # MONEY_MANAGER
 
-MONEY_MANAGERは、PythonとMySQLを使用した資産管理システムです。Flaskを利用して構築されており、簡単かつ直感的に資産や収支を管理できます。
+MONEY_MANAGERは、PythonとMySQLを使用した資産管理システムです。Flaskを利用して構築います。
 
 ## 主な機能
 
@@ -128,6 +128,5 @@ MONEY_MANAGERは、PythonとMySQLを使用した資産管理システムです�
 - 2要素認証の実装
 - 資産データの予測機能
 - より高度なデータ可視化機能
-- セッションの有効期限管理
 
 ---
