@@ -17,7 +17,7 @@
 #### **Linuxでのmysqlclientインストール中に、MySQLクライアントの開発ファイルが見つからないことでエラーが起きる場合は、`sudo apt-get install python3-dev default-libmysqlclient-dev build-essential`を実行。**
 13. `MONEY_MANAGER` のフォルダに入る
 14. `python3 main.py` で実行  
-    **注意**: ポート80を使用しているため、別アプリが動いている場合は停止してください。
+    **注意**: ポート80を使用しているため、別アプリが動いている場合は停止するか別のポートに変更してください。
 
 ## 補足
 - 使用方法に関しては `README_1.png` と `README_2.png` に記載されています。
