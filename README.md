@@ -14,7 +14,7 @@
 9. `python3 -m venv venv` で仮想環境を作成
 10. `source venv/bin/activate` で仮想環境に入る
 11. initフォルダに移動し、`pip install -r requirements.txt` で必要なライブラリをインストール
-####**Linuxでのmysqlclientインストール中に、MySQLクライアントの開発ファイルが見つからないことでエラーが起きる場合は、`sudo apt-get install python3-dev default-libmysqlclient-dev build-essential`を実行。**
+#### **Linuxでのmysqlclientインストール中に、MySQLクライアントの開発ファイルが見つからないことでエラーが起きる場合は、`sudo apt-get install python3-dev default-libmysqlclient-dev build-essential`を実行。**
 13. `MONEY_MANAGER` のフォルダに入る
 14. `python3 main.py` で実行  
     **注意**: ポート80を使用しているため、別アプリが動いている場合は停止してください。
