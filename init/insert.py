@@ -1,7 +1,4 @@
 import pandas as pd
-import sys
-
-sys.path.append("/usr/local/lib/python3.9/site-packages")
 import mysql.connector
 
 # CSVファイルの読み込み
