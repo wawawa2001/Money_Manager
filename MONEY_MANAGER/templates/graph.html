@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manager</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/manager.css') }}">
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <ul>
+      <li><a href="/manager">簡易表示</a></li>
+      <li><a href="/manager/forecast_list">収支一覧</a></li>
+      <li><a href="/manager/assets">資産管理</a></li>
+      <!-- 他のメニューアイテム -->
+    </ul>
+  </div>
+  <div class="header">
+    <h2>Manager Display</h2>
+    <a href="/logout" style="color: blue; font-weight: bold;">Logout</a>
+    <div class="menu-toggle" style="user-select: none;">&#9776;</div>
+  </div>
+
+  <div class="main">
+    <div class="graph_content">
+      <canvas id="lineChart" width="400" height="200"></canvas>
+      <div class="lineChart_btn">
+        <button id="prevButton">◀︎</button>
+        <button id="nextButton">▶︎</button>
+      </div>
+    </div>
+    <div class="graph_content">
+      <canvas id="barChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    let tmp_trans = {{transactions|tojson}};
+    let transactions = [];
+    let currentIndex = 0;
+    const pageSize = 5;
+
+    function convert_data(data) {
+      for (var i = 0; i < data.length; i++) {
+        transactions.push([new Date(parseInt(data[i][0]),
+          parseInt(data[i][1] - 1),
+          parseInt(data[i][2] + 1),
+        ), data[i][3]]);
+      }
+    }
+
+    function prepareData(transactions, startIndex, endIndex) {
+      const paginatedTransactions = transactions.slice(startIndex, endIndex);
+      return paginatedTransactions.map(item => ({
+        date: item[0].toISOString().split('T')[0],
+        value: item[1]
+      }));
+    }
+
+    function renderChart(data) {
+      const ctx = document.getElementById('lineChart').getContext('2d');
+      if (window.myChart) {
+        window.myChart.destroy();
+      }
+      window.myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(item => item.date),
+          datasets: [{
+            data: data.map(item => item.value),
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 2,
+            fill: false,
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false // ここで凡例を非表示にします
+            },
+            datalabels: {
+              anchor: 'end',
+              align: 'bottom',
+              formatter: function (value, context) {
+                return value;
+              },
+              display: true,
+              color: 'black'
+            }
+          },
+          scales: {
+            x: {
+              type: 'category',
+              labels: data.map(item => item.date) // データがある日付のみをカテゴリとして使用
+            },
+            y: {
+              beginAtZero: true
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    }
+
+    function updateChart() {
+      const data = prepareData(transactions, currentIndex, currentIndex + pageSize);
+      renderChart(data);
+    }
+
+    document.getElementById('prevButton').addEventListener('click', function () {
+      if (currentIndex > 0) {
+        currentIndex -= pageSize;
+        updateChart();
+      }
+    });
+
+    document.getElementById('nextButton').addEventListener('click', function () {
+      if (currentIndex + pageSize < transactions.length) {
+        currentIndex += pageSize;
+        updateChart();
+      }
+    });
+
+    convert_data(tmp_trans);
+    updateChart();
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // サーバーから渡されたデータ
+    let assets = {{assets|tojson}};
+
+    function prepareData(assets) {
+      return assets.map(item => ({
+        label: item[2],
+        value: item[3]
+      }));
+    }
+
+    function renderChart(data) {
+      const ctx = document.getElementById('barChart').getContext('2d');
+      if (window.myBarChart) {
+        window.myBarChart.destroy();
+      }
+      window.myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.map(item => item.label),
+          datasets: [{
+            label: 'Asset Values',
+            data: data.map(item => item.value),
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false // 凡例を非表示
+            },
+            datalabels: {
+              anchor: 'center', // 中央に表示
+              align: 'center', // 中央に表示
+              formatter: function (value, context) {
+                return value;
+              },
+              display: true,
+              color: 'black'
+            }
+          },
+          scales: {
+            x: {
+              type: 'category',
+              labels: data.map(item => item.label) // データがあるラベルのみをカテゴリとして使用
+            },
+            y: {
+              beginAtZero: true
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    }
+
+    const data = prepareData(assets);
+    renderChart(data);
+  });
+
+  document.querySelector('.menu-toggle').addEventListener('click', function () {
+    document.querySelector('.sidebar').classList.toggle('active');
+  });
+</script>
+
+</html>

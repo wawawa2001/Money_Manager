@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>認証結果</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f7f9fc;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 18px;
+        }
+
+        a{
+            text-decoration: none;
+            color: blue;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .regibtn, .loginbtn{
+            width: 45%;
+            background-color: gainsboro;
+            height: 30px;
+            border-radius: 5px;
+            padding: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .btnarea{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="{{ status }}">{{ auth }}</h1>
+        <div class="btnarea">
+            <div class="loginbtn" onclick="toLogin()"><a href="/">Loginへ</a></div>
+            <div class="regibtn" onclick="toRegister()"><a href="/register">Registerへ</a></div>
+        </div>
+    </div>
+    
+</body>
+<script>
+    function toLogin(){
+        location.href = "/"
+    }
+
+    function toRegister(){
+        location.href = "/register"
+    }
+</script>
+</html>

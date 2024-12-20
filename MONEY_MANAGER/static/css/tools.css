@@ -1,0 +1,248 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar {
+  background-color: #2A3F54;
+  color: white;
+  width: 250px;
+  padding: 15px;
+  position: fixed;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  left: -250px; /* 初期状態では左に隠す */
+  transition: left 0.3s; /* スムーズな移動のためのトランジション */
+  z-index: 1000; /* メインコンテンツの上に表示するためのz-index */
+}
+
+.sidebar.active {
+  left: 0; /* アクティブ状態では表示する */
+}
+
+.header {
+  background-color: #EDEDED;
+  padding: 10px 15px;
+  width: 100%; /* ヘッダーの幅を100%に */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 50px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  z-index: 999; /* サイドバーより低いが、メインコンテンツより高い */
+}
+
+.main {
+  margin-top: 50px;
+  padding: 15px;
+  background-color: #F7F7F7;
+  width: 100%;
+  height: calc(100% - 50px);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.graph_content{
+  width: 45%;
+  background-color: #dddddd;
+  border-radius: 7px;
+  padding: 20px;
+  position: relative;
+}
+
+.lineChart_btn{
+  position: absolute;
+  top: 3px;
+  right: 3px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 10px 0;
+}
+
+#alltable {
+  width: 85%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  font-size: 1em;
+  text-align: left;
+}
+
+#alltable thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+
+#alltable th, #alltable td {
+  padding: 12px 15px;
+  border: 1px solid #dddddd;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+#alltable tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+#alltable tbody tr:nth-of-type(odd) {
+  background-color: #ffffff;
+}
+
+#alltable tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+#form_split_container{
+  width: 85%;
+  display: flex;
+}
+
+.right_form .left_form{
+  width: 100px;
+}
+
+.sum_assets, #sumDisplay{
+  margin: 0 auto;
+  width: 85%;
+  height: 8%;
+  background-color: #3A6F84;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+}
+
+#put_form {
+  display: none; /* フォームを隠す */
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+.post_btn, .forecast_list_post_btn, .downloadCsvBtn{
+  border-radius: 5px;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: lightgray;
+  height: 8%;
+  cursor: pointer;
+  user-select: none;
+  font-size: 20px;
+}
+
+.header{
+  display: flex;
+  justify-content: space-between;
+}
+
+.sidebar h2{
+  text-align: center;
+}
+
+.sidebar li{
+  margin-left: 20px;
+}
+
+.button_area{
+  justify-content: space-between;
+  margin: 0 auto;
+  display: flex;
+  width: 85%;
+}
+
+.post_btn, .forecast_list_post_btn, .downloadCsvBtn{
+  padding: 8px;
+  height: 8%;
+  width: 47%;
+  font-size: 20px;
+}
+
+#detail_register_btn{
+  user-select: none;
+  cursor: pointer;
+}
+
+.detail_setting{
+  background-color: white;
+  width: 25%;
+  height: 30%;
+  position: absolute;
+  font-size: 18px;
+  border: 1px solid black;
+  border-radius: 10px;
+  display: none;
+  right: 10px;
+  top: 10px;
+}
+
+.detail_setting span{
+  margin-left: 20px;
+}
+
+.post_btn_assets{
+  width: 83%;
+}
+
+/* スマホ対応のための追加CSS */
+@media screen and (max-width: 1024px) { /* 横向きも含めて幅が1024px以下の場合 */
+  .header {
+      width: 100%;
+  }
+
+  .main {
+      margin-left: 0;
+      width: 100%;
+  }
+
+  .menu-toggle {
+      display: block;
+      font-size: 24px;
+      cursor: pointer;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  .menu-toggle {
+      display: none;
+  }
+
+  .sidebar {
+      left: 0;
+  }
+
+  .header {
+      width: calc(100% - 250px);
+      left: 250px;
+  }
+
+  .main {
+      margin-left: 250px;
+      width: calc(100% - 250px);
+  }
+}

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tools.css') }}">
+    <style>
+        /* スタイリッシュなファイル選択ボタンのスタイル */
+        .custom-file-upload {
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #45a049;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .button-area {
+            margin-top: 20px;
+        }
+
+        .upload-csv-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .upload-csv-btn:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h2>All Transactions</h2>
+        <a href="/logout" style="color: blue; font-weight: bold;">Logout</a>
+        <div class="menu-toggle" style="user-select: none;">&#9776;</div>
+    </div>
+
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="/manager">簡易表示</a></li>
+            <li><a href="/manager/forecast_list">収支一覧</a></li>
+            <li><a href="/manager/assets">資産管理</a></li>
+        </ul>
+    </div>
+
+    <div class="detail_setting" id="detail_setting">
+        ＜繰り返し＞<br>
+        <span>毎月：</span><input type="radio" name="loop" checked="true"><br>
+        <span>毎週：</span><input type="radio" name="loop"><br>
+        <span>毎日：</span><input type="radio" name="loop"><br>
+        ＜いつまで＞<br>
+        <span>〜</span><input id="loopbtwdate" type="date">まで
+        <button onclick="resist_detail()">登録</button>
+    </div>
+
+    <div class="main">
+        <form id="put_form" action="/manager/list/put" method="post">
+            日付：<input type="date" id="date" name="date"><br>
+            <div class="form_split_container">
+                <div class="left_form">
+                    金額：<input type="number" id="form_num" name="value"><br>
+                </div>
+                <div class="right_form">
+                    <label for="category">カテゴリー：</label>
+                    <input list="categoryList" id="category" name="category"><br>
+                    <datalist id="categoryList">
+                        <option value="給与"></option>
+                        <option value="副収入"></option>
+                        <option value="その他収入"></option>
+                        <option value="家賃・住宅"></option>
+                        <option value="公共料金"></option>
+                        <option value="食費"></option>
+                        <option value="交通費"></option>
+                        <option value="医療費"></option>
+                        <option value="保険"></option>
+                        <option value="娯楽"></option>
+                        <option value="その他支出"></option>
+                        <option value="学費"></option>
+                        <option value="定期支払い"></option>
+                        <option value="クレジット系"></option>
+                        <option value="返済"></option>
+                    </datalist>
+                    詳細：<textarea name="description" id="description"></textarea><br>
+                </div>
+            </div>
+            <input type="submit">
+        </form>
+
+        <div class="button_area">
+            <div id="downloadCsvBtn" class="downloadCsvBtn">CSVをダウンロード</div>
+            <div onclick="setAndSubmitForm()" class="forecast_list_post_btn">データ送信</div>
+        </div>
+
+        <a href="assets">
+            <div class="sum_assets">
+                現在の資産：{{sum}} 円
+            </div>
+        </a>
+
+        <table id="alltable">
+            <tr>
+                <th onclick="add_row(this)">日付（クリックで追加）</th>
+                <th>金額</th>
+                <th>カテゴリー</th>
+                <th>詳細</th>
+                <th>合計</th>
+                <th>変更/削除</th>
+            </tr>
+
+            {% for row in data %}
+            <tr>
+                <td onclick="add_row(this)" entrytype="{{row[-1]}}" entryid="{{row[0]}}">{{ row[3] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ categories[row[4]-1]}}</td>
+                <td>{{ row[-2] }}</td>
+                <td></td>
+                <td><button class="changeitem_btn" onclick="changeitem(event)">変更</button><button class="deleteitem_btn"
+                        onclick="deleteitem(event)">削除</button></td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        
+    </div>
+
+    <script>
+        change_nos = []
+
+        async function deleteitem(event) {
+            let tr = event.target.closest('tr');
+            tds = tr.getElementsByTagName("td")
+            id = tds[0].getAttribute("entryid")
+
+            var data = {
+                entryid: id
+            }
+
+            try {
+                const response = await fetch('/manager/list/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    console.log('Data successfully sent to the server');
+                    location.reload();
+                } else {
+                    console.error('Failed to send data to the server');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function changeitem(event) {
+            let tr = event.target.closest('tr');
+            event.target.innerText = "クリア"
+
+            tds = tr.getElementsByTagName("td")
+
+            tds[0].innerHTML = "<input type='date' value='" + tds[0].innerText + "'>"
+            id = tds[0].getAttribute("entryid")
+
+            change_nos.push([id])
+
+            tr.id = "changed_" + id
+
+            for (var i = 1; i < tds.length - 2; i++) {
+                tds[i].setAttribute("contenteditable", "true")
+            }
+
+            tds[2].innerHTML = "<input list='categoryList' id='category' name='category' value='" + tds[2].innerText + "'><datalist id='categoryList'><option value='給与'></option><option value='副収入'></option><option value='その他収入'></option><option value='家賃・住宅'></option><option value='公共料金'></option><option value='食費'></option><option value='交通費'></option><option value='医療費'></option><option value='保険'></option><option value='娯楽'></option><option value='その他支出'></option><option value='学費'></option><option value='定期支払い'></option><option value='クレジット系'></option><option value='返済'></option></datalist>"
+        }
+
+        function reloadPage() {
+            location.reload();
+        }
+
+        function calc_money() {
+            sum = {{ sum }}
+            let table = document.getElementById("alltable");
+
+            if (table.rows[1].cells[0].getAttribute("entrytype") == "0") {
+                val = parseInt(sum) + parseInt(table.rows[1].cells[1].innerText)
+            } else {
+                val = parseInt(sum) - parseInt(table.rows[1].cells[1].innerText)
+                table.rows[1].cells[4].innerHTML = val
+                if (val < 0) {
+                    table.rows[1].cells[4].style.Color = "red";
+                }
+            }
+
+            if (val < 0) {
+                table.rows[1].cells[4].style.color = "red";
+            } else if (val < 30000) {
+                table.rows[1].cells[4].style.color = "coral";
+            } else if (val < 50000) {
+                table.rows[1].cells[4].style.color = "green";
+            }
+
+            table.rows[1].cells[4].innerHTML = val
+
+            for (let i = 2; i < table.rows.length; i++) {
+                if (table.rows[i].cells[0].getAttribute("entrytype") == "0") {
+                    val = table.rows[i].cells[4].innerText = parseInt(table.rows[i - 1].cells[4].innerText) + parseInt(table.rows[i].cells[1].innerText)
+                    table.rows[i].cells[4].innerHTML = val
+                } else {
+                    val = parseInt(table.rows[i - 1].cells[4].innerText) - parseInt(table.rows[i].cells[1].innerText)
+                    table.rows[i].cells[4].innerHTML = val
+                }
+
+                if (val < 0) {
+                    table.rows[i].cells[4].style.color = "red";
+                } else if (val < 30000) {
+                    table.rows[i].cells[4].style.color = "coral";
+                } else if (val < 50000) {
+                    table.rows[i].cells[4].style.color = "green";
+                }
+            }
+        }
+
+        function set_color() {
+            let table = document.getElementById("alltable");
+
+            for (let i = 1; i < table.rows.length; i++) {
+                if (table.rows[i].cells[0].getAttribute("entrytype") == "0") {
+                    table.rows[i].style.backgroundColor = "lightcyan";
+                } else {
+                    table.rows[i].style.backgroundColor = "peachpuff";
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if ("{{msg}}" != "") {
+                alert("{{msg}}");
+                
+            } else {
+                calc_money();
+                set_color();
+            }
+        });
+
+        add_rows = [];
+
+        function get_add_rows() {
+            let rows = [];
+
+            for (var i = 0; i < add_rows.length; i++) {
+                date = add_rows[i].cells[0].getElementsByTagName("input")[0].value;
+                value = add_rows[i].cells[1].innerText;
+                category = add_rows[i].cells[2].getElementsByTagName("input")[0].value;
+                description = add_rows[i].cells[3].innerText;
+                loop = document.getElementById("add_row_" + i).getAttribute("loop");
+                loopbtwdate = document.getElementById("add_row_" + i).getAttribute("todate");
+
+                rows.push([date, value, category, description, loop, loopbtwdate]);
+            }
+
+            return rows;
+        }
+
+        async function SendChangedData() {
+            var data = [];
+
+            for (var i = 0; i < change_nos.length; i++) {
+                var tr = document.getElementById("changed_" + change_nos[i]);
+                var tds = tr.getElementsByTagName("td");
+
+                data.push({
+                    entryid: change_nos[i],
+                    entrytype: tds[0].getAttribute("entrytype"),
+                    date: tds[0].getElementsByTagName("input")[0].value,
+                    value: tds[1].innerText,
+                    category: tds[2].getElementsByTagName("input")[0].value,
+                    description: tds[3].innerText
+                });
+            }
+
+            try {
+                const response = await fetch('/manager/list/change', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    console.log('Data successfully sent to the server');
+                    location.reload();
+                } else {
+                    console.error('Failed to send data to the server');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function setAndSubmitForm() {
+            if (change_nos.length != 0) {
+                await SendChangedData();
+                change_nos = [];
+            }
+
+            setTimeout(function () {
+            }, 1000);
+
+            var post_data = get_add_rows();
+
+            var data = [];
+
+            for (var i = 0; i < post_data.length; i++) {
+                data.push({
+                    date: post_data[i][0],
+                    value: post_data[i][1],
+                    category: post_data[i][2],
+                    description: post_data[i][3],
+                    loop: post_data[i][4],
+                    loopbtwdate: post_data[i][5]
+                });
+            }
+
+            try {
+                const response = await fetch('/manager/list/put', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    console.log('Data successfully sent to the server');
+                    location.reload();
+                } else {
+                    console.error('Failed to send data to the server');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            location.reload();
+        }
+
+        btn_no = 0;
+        options = [];
+
+        function add_row(e) {
+            document.getElementById("detail_setting").style.display = "none";
+            document.getElementById("detail_setting").setAttribute("add_row_no", "");
+            const categories = {{ categories| safe }};
+
+            console.log(e.innerText);
+            currentRow = e.parentElement;
+            if (e.innerText != "日付（クリックで追加）"){
+                var default_date = new Date(e.innerText);
+                default_date.setDate(default_date.getDate() + 1);
+                default_date = default_date.toISOString().split('T')[0];
+            }
+            tr = document.createElement("tr");
+            tr.id = "add_row_" + btn_no;
+
+            tds = [
+                document.createElement("td"),
+                document.createElement("td"),
+                document.createElement("td"),
+                document.createElement("td"),
+                document.createElement("td")
+            ];
+
+            input_date = document.createElement("input");
+            input_date.setAttribute("type", "date");
+
+            if (e.innerText != "日付"){
+                input_date.setAttribute("value", default_date);
+            }
+
+            tds[0].appendChild(input_date);
+
+            var input_category = document.createElement("input");
+            input_category.setAttribute("list", "categoryList");
+            input_category.setAttribute("id", "category");
+            input_category.setAttribute("name", "category");
+
+            var datalist = document.createElement("datalist");
+            datalist.setAttribute("id", "categoryList");
+
+            categories.forEach(function (category) {
+                var option = document.createElement("option");
+                option.setAttribute("value", category);
+                datalist.appendChild(option);
+            });
+
+            tds[2].appendChild(input_category);
+            tds[2].appendChild(datalist);
+
+            button = document.createElement("button");
+            button.id = "detail_register_btn";
+            button.className = "detail_register_btn";
+            button.setAttribute("onclick", "detail_regist_display(this)");
+            button.innerText = "詳細登録";
+            button.setAttribute("btn_no", btn_no);
+
+            btn_no++;
+            options.push([]);
+
+            tds[4].appendChild(button);
+
+            for (var i = 0; i < tds.length; i++) {
+                tds[i].setAttribute("contenteditable", "true");
+                tr.appendChild(tds[i]);
+            }
+
+            currentRow.parentElement.insertBefore(tr, currentRow.nextElementSibling);
+
+            add_rows.push(tr);
+        }
+
+        current_set_no = 0;
+
+        function detail_regist_display(elem) {
+            row_no = elem.getAttribute("btn_no");
+            document.getElementById("detail_setting").setAttribute("add_row_no", row_no);
+            document.getElementsByClassName("detail_register_btn");
+            display_status = document.getElementById("detail_setting").style.display;
+            if (display_status == "none" || display_status == "") {
+                document.getElementById("detail_setting").style.display = "block";
+            } else {
+                document.getElementById("detail_setting").style.display = "none";
+                document.getElementById("detail_setting").style.display = "block";
+            }
+        }
+
+        function resist_detail() {
+            var no = document.getElementById("detail_setting").getAttribute("add_row_no");
+            const radios = document.getElementsByName('loop');
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    between_select = i;
+                }
+            }
+
+            var todate = document.getElementById("loopbtwdate").value;
+
+            document.getElementById("add_row_" + no).setAttribute("loop", between_select);
+            document.getElementById("add_row_" + no).setAttribute("todate", todate);
+
+            document.getElementById("detail_setting").style.display = "none";
+        }
+
+        document.querySelector('.menu-toggle').addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+
+        document.getElementById('downloadCsvBtn').addEventListener('click', function () {
+            var table = document.getElementById('alltable');
+            var csv = [];
+            
+            for (var i = 0; i < table.rows.length; i++) {
+                var row = [], cols = table.rows[i].querySelectorAll('td, th');
+                
+                for (var j = 0; j < cols.length-2; j++) {
+                    row.push(cols[j].innerText);
+                }
+                
+                csv.push(row.join(','));
+            }
+
+            // CSV文字列を生成（UTF-8 BOM付き）
+            var csvString = '\uFEFF' + csv.join('\n');
+
+            // ダウンロードリンクを生成
+            var downloadLink = document.createElement('a');
+            var blob = new Blob([csvString], { type: 'text/csv' });
+            var url = URL.createObjectURL(blob);
+            downloadLink.href = url;
+            downloadLink.download = 'table_data.csv';
+
+            // リンクをクリックしてダウンロードを実行
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        });
+
+        async function uploadCsv() {
+            let fileInput = document.getElementById('csvFileInput');
+            let file = fileInput.files[0];
+            if (file) {
+                let formData = new FormData();
+                formData.append('csv', file);
+
+                try {
+                    const response = await fetch('/upload_csv', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        console.log('CSV file successfully sent to the server');
+                        alert('CSVファイルが正常に送信されました');
+                        fileInput.value = ''; // Reset file input
+                    } else {
+                        console.error('Failed to send CSV file to the server');
+                        alert('CSVファイルの送信に失敗しました');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('エラーが発生しました');
+                }
+            } else {
+                alert('CSVファイルを選択してください');
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

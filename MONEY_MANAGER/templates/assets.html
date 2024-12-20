@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Assets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tools.css') }}">
+    
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="/manager">簡易表示</a></li>
+            <li><a href="/manager/forecast_list">収支一覧</a></li>
+            <li><a href="/manager/assets">資産管理</a></li>
+            <!-- 他のメニューアイテム -->
+        </ul>
+    </div>
+    <div class="header">
+        <h2>Manager Assets</h2>
+        <a href="/logout" style="color: blue; font-weight: bold;">Logout</a>
+        <div class="menu-toggle" style="user-select: none;">&#9776;</div> 
+    </div>
+    <div class="main">
+        <div onclick="sendData()" class="post_btn post_btn_assets">データ送信</div>
+
+        <a href="forecast_list">
+            <div id="sumDisplay"></div>
+        </a>
+        
+
+        <table id="alltable">
+            <tr>
+                <th onclick="add_row()">Name（クリックで追加）</th>
+                <th onclick="add_row()">Value</th>
+                <th></th>
+            </tr>
+            {% for row in assets_data %}
+            <tr>
+                <td contenteditable="true" assetid="{{row[0]}}">{{ row[2] }}</td>
+                <td contenteditable="true">{{ row[3] }}</td>
+                <th><button onclick="deleterow(event)">削除</button></th>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <form id="hiddenForm" action="./assets" method="post" style="display:none;">
+        <input type="hidden" name="assets" value="">
+    </form>
+
+    <form id="hiddenDelDataForm" action="/manager/asset/delete" method="post" style="display:none;">
+        <input type="hidden" name="assets" value="">
+    </form>
+</body>
+
+<script>
+    function add_row() {
+        table = document.getElementById("alltable");
+        let tr = document.createElement("tr");
+        let td1 = document.createElement("td");
+        let td2 = document.createElement("td");
+        td1.setAttribute("contenteditable", "true");
+        td2.setAttribute("contenteditable", "true");
+
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+
+        table.appendChild(tr);
+    }
+
+    function get_assets() {
+        let table = document.getElementById("alltable");
+        let assets = [];
+        for (let i = 1; i < table.rows.length; i++) {
+            assets.push([table.rows[i].cells[0].innerText, table.rows[i].cells[1].innerText]);
+        }
+        return assets;
+    }
+
+    function calculateSum() {
+        let table = document.getElementById("alltable");
+        let sum = 0;
+        for (let i = 1; i < table.rows.length; i++) {
+            sum += parseInt(table.rows[i].cells[1].innerText, 10);
+        }
+        return sum;
+    }
+
+    function displaySum() {
+        let sum = calculateSum();
+        document.getElementById("sumDisplay").innerText = "現在の資産: " + sum + "円";
+    }
+
+    window.onload = function() {
+
+        if ("{{msg}}" != ""){
+            alert("{{msg}}")
+        }
+        displaySum();
+        observeTableChanges();
+    }
+
+    function observeTableChanges() {
+        let table = document.getElementById("alltable");
+        let observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' || mutation.type === 'characterData' || mutation.type === 'subtree') {
+                    displaySum();
+                }
+            });
+        });
+
+        let config = { childList: true, characterData: true, subtree: true };
+        observer.observe(table, config);
+    }
+
+    function sendData() {
+        let assets = get_assets();
+        let form = document.getElementById("hiddenForm");
+        form.elements["assets"].value = JSON.stringify(assets);
+        form.submit();
+    }
+
+    function deleterow(e) {
+        let row = e.target.parentElement.parentElement;
+        row.parentElement.removeChild(row);
+        alert("最後にデータ送信ボタンを押して確定してください。ページ再読み込みで取り消せます。")
+    }
+
+    document.querySelector('.menu-toggle').addEventListener('click', function () {
+        document.querySelector('.sidebar').classList.toggle('active');
+    });
+</script>
+</html>

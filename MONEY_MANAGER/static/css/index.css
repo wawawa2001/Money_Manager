@@ -1,0 +1,67 @@
+*{
+    margin: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+body{
+    margin: 0;
+    background-image: url("img/login.webp");
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+header{
+    height: 10%;
+    background-color: darkturquoise;
+}
+
+main{
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer{
+    height: 10%;
+}
+
+.form_containar{
+    background: transparent;
+    width: 300px;
+    height: 400px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 10px;
+    color: #fff;
+}
+
+input{
+    color: #444;
+    text-align: center;
+    border-radius: 30px;
+    width: 85%;
+    height: 12%;
+    border: 0.7px solid #fff;
+    background-color: #999;
+    backdrop-filter: blur(10px);
+}
+
+input[type="text"], input[type="password"], input[type="email"]{
+    background: transparent;
+}
+
+form{
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}

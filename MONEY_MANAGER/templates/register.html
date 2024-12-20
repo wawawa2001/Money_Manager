@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+
+    <main>
+        <div class="form_containar">
+            <form action="/register" method="post">
+                <h2>Sign up</h2>
+                <input type="text" name="nickname" placeholder="Nick Name">
+                <input type="email" name="email" placeholder="Mail Address">
+                <input type="password" name="password" placeholder="Password">
+                {% if message %}
+                    <p>{{ message }}</p>
+                {% endif %}
+                <h5 style="color: red; font-weight: 100; width: 85%;">{{msg}}</h5>
+                <input type="submit" class="submit" value="Register">
+                <a href="/">Login Page</a>
+            </form>
+        </div>
+    </main>
+    
+
+    <footer>
+
+    </footer>
+</body>
+</html>

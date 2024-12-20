@@ -1,0 +1,33 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+
+    <main>
+        <div class="form_containar">
+            <form action="/" method="post">
+                <h2>Login</h2>
+                <input type="text" name="username" placeholder="USERNAME">
+                <input type="password" name="password" placeholder="PASSWORD">
+                {% if message %}
+                <p style="color: red;">{{ message }}</p>
+                {% endif %}
+                <input type="submit" class="submit" value="LOGIN">
+                <a href="/register">Create New Account</a>
+            </form>
+        </div>
+    </main>
+    
+
+    <footer>
+
+    </footer>
+</body>
+<script>
+    
+</script>
+</html>
